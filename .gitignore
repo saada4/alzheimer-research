@@ -18,3 +18,9 @@
 /random_forrest_without_oral_health.svg
 /sandbox.py
 *__pycache__
+
+storage/data_20240725.csv
+storage/data_20240725.pickle
+storage/deep_net.py
+storage/model_data.pickle
+storage/model.pickle
