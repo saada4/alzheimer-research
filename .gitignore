@@ -25,3 +25,5 @@ storage/data_20240725.pickle
 storage/deep_net.py
 storage/model_data.pickle
 storage/model.pickle
+
+*.svg

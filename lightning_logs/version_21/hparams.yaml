@@ -1,0 +1,4 @@
+do_logging: true
+input_dim: 69
+lr: 0.001
+n_flows: 4
