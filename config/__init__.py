@@ -42,11 +42,17 @@ from dask import array as da
 from dask import delayed
 import pandas as pd
 import numpy as np
+import torch
+import torch.nn as nn
+import normflows as nf
+import pytorch_lightning as pl
+
 # model
 import sklearn
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import TunedThresholdClassifierCV
+from sklearn.model_selection import TunedThresholdClassifierCV, RandomizedSearchCV
+from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.metrics import accuracy_score, f1_score, recall_score, precision_score, \
     confusion_matrix, ConfusionMatrixDisplay, classification_report
 # misc
@@ -63,7 +69,8 @@ model_pickle = "storage/model.pickle"
 # constants
 reduction_factor = 2 ** 10 # How much to shrink the population data by
 alpha = 2 ** 3 # Laplace Smoothing for the stimulated population (accounts for regions with little data)
-alpha_dementia = .3 # 30% smoothing on the population which has dementia
+# alpha_dementia = .3 # 30% smoothing on the population which has dementia
+alpha_dementia = .5 # 30% smoothing on the population which has dementia
 
 topics_to_use = [
     "Frequent mental distress",
@@ -138,9 +145,9 @@ Rajan KB, Weuve J, Barnes LL, McAninch EA, Wilson RS, Evans DA.
 '''
 # add 30% padding to account for unbalanced class data
 dementia_statistics = {
-    "Overall" : (1 - .1 / 100_000 - alpha_dementia, .1 / 100_000 + alpha_dementia),
-    "50-64 years": (1 - np.mean((1.6, 6.7, 23.3)) / 100_000 - alpha_dementia, np.mean((1.6, 6.7, 23.3)) / 100_000 + alpha_dementia),
-    "65 years or older": (1 - 11.3 / 100 - alpha_dementia, 11.3 / 100 + alpha_dementia)
+    "Overall" : (1 - ((.1 / 100_000) + alpha_dementia), (.1 / 100_000) + alpha_dementia),
+    "50-64 years": (1 - (np.mean((1.6, 6.7, 23.3)) / 100_000 + alpha_dementia), (np.mean((1.6, 6.7, 23.3)) / 100_000) + alpha_dementia),
+    "65 years or older": (1 - ((11.3 / 100) + alpha_dementia), (11.3 / 100) + alpha_dementia)
 }
 
 non_patient_probabilities = {

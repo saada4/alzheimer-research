@@ -123,7 +123,7 @@ def stimulate_data(data_stimulated: pd.DataFrame, stratified_data: list[pd.DataF
             # pre-probability info for each question
             question_info = ([sub_frame[condition] for condition, sub_frame in zip(conditions, stratified_data)])
             # col1 are mean, col2 are std
-            means_and_std = da.from_array([get_mean_and_std(question, stimulated_row, sub_frame) for question, sub_frame in zip(question_info, stratified_data)])    
+            means_and_std = np.array([get_mean_and_std(question, stimulated_row, sub_frame) for question, sub_frame in zip(question_info, stratified_data)])
             probabilities = rng.normal(means_and_std[:, 0], means_and_std[:, 1]).clip(0.005, 99.995)
             try:
                 return [rng.choice(choices, p=(1 - probability / 100, probability / 100)) for probability in probabilities]
